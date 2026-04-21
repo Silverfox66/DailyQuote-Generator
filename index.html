@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Random Quote Machine</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- React + ReactDOM -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+  <!-- Babel (so you can use JSX directly) -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    body {
+      background-color: #282c34;
+      font-family: Arial, sans-serif;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- FCC Test Script (THIS is the "thingy") -->
+  <script src="https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js"></script>
+
+  <div id="root"></div>
+
+  <script type="text/babel">
+    function App() {
+      const [quote, setQuote] = React.useState({
+        text: "Loading...",
+        author: "..."
+      });
+
+      const getNewQuote = async () => {
+        try {
+          const res = await fetch("https://api.quotable.io/random");
+          const data = await res.json();
+
+          setQuote({
+            text: data.content,
+            author: data.author
+          });
+        } catch {
+          setQuote({
+            text: "Failed to load quote.",
+            author: "System"
+          });
+        }
+      };
+
+      React.useEffect(() => {
+        getNewQuote();
+      }, []);
+
+      const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+        `"${quote.text}" - ${quote.author}`
+      )}`;
+
+      return (
+        <div id="quote-box" style={{
+          width: "400px",
+          margin: "100px auto",
+          padding: "20px",
+          background: "white",
+          borderRadius: "10px",
+          textAlign: "center"
+        }}>
+          <p id="text">{quote.text}</p>
+          <p id="author">- {quote.author}</p>
+
+          <button id="new-quote" onClick={getNewQuote}>
+            New Quote
+          </button>
+
+          <br /><br />
+
+          <a
+            id="tweet-quote"
+            href={tweetUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Tweet
+          </a>
+        </div>
+      );
+    }
+
+    ReactDOM.render(<App />, document.getElementById("root"));
+  </script>
+
+</body>
+</html>
