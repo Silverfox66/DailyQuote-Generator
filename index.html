@@ -1,75 +1,81 @@
-<script type="text/babel">
-function App() {
-  const [quotes, setQuotes] = React.useState([]);
-  const [current, setCurrent] = React.useState({
-    text: "Loading...",
-    author: "..."
-  });
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Quote Machine</title>
 
-  const getQuotes = () => {
-    fetch("https://random-quote-machine.freecodecamp.rocks/api/quotes")
-      .then(res => res.json())
-      .then(data => {
-        setQuotes(data);
-        pickRandom(data);
-      })
-      .catch(() => {
-        setCurrent({
-          text: "Failed to load quotes",
-          author: "System"
-        });
+  <!-- React 17 -->
+  <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+
+  <!-- Babel -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+
+<body style="background:#282c34;">
+
+  <!-- FCC Test -->
+  <script src="https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js"></script>
+
+  <div id="root"></div>
+
+  <script type="text/babel">
+    function App() {
+      const [quotes, setQuotes] = React.useState([]);
+      const [current, setCurrent] = React.useState({
+        text: "Loading...",
+        author: "..."
       });
-  };
 
-  const pickRandom = (data) => {
-    const random = data[Math.floor(Math.random() * data.length)];
-    setCurrent({
-      text: random.quote,
-      author: random.author
-    });
-  };
+      const getQuotes = () => {
+        fetch("https://random-quote-machine.freecodecamp.rocks/api/quotes")
+          .then(res => res.json())
+          .then(data => {
+            setQuotes(data);
+            const random = data[Math.floor(Math.random() * data.length)];
+            setCurrent({ text: random.quote, author: random.author });
+          });
+      };
 
-  const newQuote = () => {
-    pickRandom(quotes);
-  };
+      const newQuote = () => {
+        const random = quotes[Math.floor(Math.random() * quotes.length)];
+        setCurrent({ text: random.quote, author: random.author });
+      };
 
-  React.useEffect(() => {
-    getQuotes();
-  }, []);
+      React.useEffect(() => {
+        getQuotes();
+      }, []);
 
-  const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-    `"${current.text}" - ${current.author}`
-  )}`;
+      const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+        `"${current.text}" - ${current.author}`
+      )}`;
 
-  return (
-    <div id="quote-box" style={{
-      width: "400px",
-      margin: "100px auto",
-      padding: "20px",
-      background: "white",
-      borderRadius: "10px",
-      textAlign: "center"
-    }}>
-      <p id="text">{current.text}</p>
-      <p id="author">- {current.author}</p>
+      return (
+        <div id="quote-box" style={{
+          width: "400px",
+          margin: "100px auto",
+          padding: "20px",
+          background: "white",
+          borderRadius: "10px",
+          textAlign: "center"
+        }}>
+          <p id="text">{current.text}</p>
+          <p id="author">- {current.author}</p>
 
-      <button id="new-quote" onClick={newQuote}>
-        New Quote
-      </button>
+          <button id="new-quote" onClick={newQuote}>
+            New Quote
+          </button>
 
-      <br /><br />
+          <br /><br />
 
-      <a
-        id="tweet-quote"
-        href={tweetUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Tweet
-      </a>
-    </div>
-  );
-}
+          <a id="tweet-quote" href={tweetUrl} target="_blank">
+            Tweet
+          </a>
+        </div>
+      );
+    }
 
-ReactDOM.render(<App />, document.getElementById("root"));
-</script>
+    ReactDOM.render(<App />, document.getElementById("root"));
+  </script>
+
+</body>
+</html>
