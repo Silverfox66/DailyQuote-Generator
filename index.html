@@ -1,33 +1,44 @@
 <script type="text/babel">
 function App() {
-  const [quote, setQuote] = React.useState({
+  const [quotes, setQuotes] = React.useState([]);
+  const [current, setCurrent] = React.useState({
     text: "Loading...",
     author: "..."
   });
 
-  const getNewQuote = () => {
-    fetch("https://api.quotable.io/random")
+  const getQuotes = () => {
+    fetch("https://random-quote-machine.freecodecamp.rocks/api/quotes")
       .then(res => res.json())
       .then(data => {
-        setQuote({
-          text: data.content,
-          author: data.author
-        });
+        setQuotes(data);
+        pickRandom(data);
       })
       .catch(() => {
-        setQuote({
-          text: "Error loading quote",
+        setCurrent({
+          text: "Failed to load quotes",
           author: "System"
         });
       });
   };
 
+  const pickRandom = (data) => {
+    const random = data[Math.floor(Math.random() * data.length)];
+    setCurrent({
+      text: random.quote,
+      author: random.author
+    });
+  };
+
+  const newQuote = () => {
+    pickRandom(quotes);
+  };
+
   React.useEffect(() => {
-    getNewQuote();
+    getQuotes();
   }, []);
 
   const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-    `"${quote.text}" - ${quote.author}`
+    `"${current.text}" - ${current.author}`
   )}`;
 
   return (
@@ -39,10 +50,10 @@ function App() {
       borderRadius: "10px",
       textAlign: "center"
     }}>
-      <p id="text">{quote.text}</p>
-      <p id="author">- {quote.author}</p>
+      <p id="text">{current.text}</p>
+      <p id="author">- {current.author}</p>
 
-      <button id="new-quote" onClick={getNewQuote}>
+      <button id="new-quote" onClick={newQuote}>
         New Quote
       </button>
 
